@@ -1,0 +1,53 @@
+# ===================================================================
+# Spring Boot application configuration
+# ===================================================================
+
+#  Define active profile
+spring:
+  profiles:
+    active: dev
+
+---
+# ===================================================================
+# Development profile configuration
+# ===================================================================
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  # DataSource Configuration
+  datasource:
+    url: jdbc:mysql://localhost:3306/digital_network?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: your_pwd # 请您后续修改为本地 MySQL 的 root 密码
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+# MyBatis-Plus Configuration
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+server:
+  port: 8080
+
+---
+# ===================================================================
+# Production profile configuration
+# ===================================================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  # DataSource Configuration
+  datasource:
+    url: jdbc:mysql://localhost:3306/digital_network?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: prod_user
+    password: prod_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+server:
+  port: 8080
