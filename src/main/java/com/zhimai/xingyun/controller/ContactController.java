@@ -4,6 +4,9 @@ import com.zhimai.xingyun.dto.ContactCreateDTO;
 import com.zhimai.xingyun.service.IContactService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import com.zhimai.xingyun.dto.ContactDetailVO;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,5 +37,14 @@ public class ContactController {
         
         // 返回 201 Created 状态码，表示资源创建成功
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ContactDetailVO> getContactDetail(@PathVariable("id") Long contactId) {
+        // TODO: 在 Phase 4 (安全认证) 中，此 ID 应从 Security Context 获取
+        long currentUserId = 1L;
+
+        ContactDetailVO contactDetail = contactService.getContactDetail(contactId, currentUserId);
+        return ResponseEntity.ok(contactDetail);
     }
 }

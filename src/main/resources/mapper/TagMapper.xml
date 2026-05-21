@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhimai.xingyun.mapper.TagMapper">
+
+    <select id="findTagsByContactId" resultType="com.zhimai.xingyun.dto.TagDTO">
+        SELECT
+            t.id,
+            t.name,
+            t.color_code AS colorCode
+        FROM
+            tags t
+        JOIN
+            contact_tags ct ON t.id = ct.tag_id
+        WHERE
+            ct.contact_id = #{contactId}
+    </select>
+
+</mapper>
