@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.zhimai.xingyun.dto.ContactListItemDTO;
+
+import java.util.List;
+import java.util.Map;
+
 /**
  * 联系人模块的API端点
  *
@@ -46,5 +51,14 @@ public class ContactController {
 
         ContactDetailVO contactDetail = contactService.getContactDetail(contactId, currentUserId);
         return ResponseEntity.ok(contactDetail);
+    }
+
+    @GetMapping
+    public ResponseEntity<Map<String, List<ContactListItemDTO>>> getContactList() {
+        // TODO: 在 Phase 4 (安全认证) 中，此 ID 应从 Security Context 获取
+        long currentUserId = 1L;
+
+        Map<String, List<ContactListItemDTO>> groupedContacts = contactService.getContactListGrouped(currentUserId);
+        return ResponseEntity.ok(groupedContacts);
     }
 }

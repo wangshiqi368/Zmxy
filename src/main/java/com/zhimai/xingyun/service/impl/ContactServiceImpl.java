@@ -5,6 +5,7 @@ import com.zhimai.xingyun.domain.entity.Contact;
 import com.zhimai.xingyun.domain.entity.Interaction;
 import com.zhimai.xingyun.dto.ContactCreateDTO;
 import com.zhimai.xingyun.dto.ContactDetailVO;
+import com.zhimai.xingyun.dto.ContactListItemDTO;
 import com.zhimai.xingyun.dto.InteractionDTO;
 import com.zhimai.xingyun.dto.TagDTO;
 import com.zhimai.xingyun.exception.ResourceNotFoundException;
@@ -19,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -92,6 +95,46 @@ public class ContactServiceImpl implements IContactService {
         detailVO.setTimeline(interactionDTOs);
 
         return detailVO;
+    }
+
+    @Override
+    public Map<String, List<ContactListItemDTO>> getContactListGrouped(Long userId) {
+        // 1. 获取该用户的所有联系人，并按拼音排序
+        QueryWrapper<Contact> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id", userId).orderByAsc("pinyin_name");
+        List<Contact> contacts = contactMapper.selectList(wrapper);
+
+        if (CollectionUtils.isEmpty(contacts)) {
+            return Collections.emptyMap();
+        }
+
+        // 2. 按拼音首字母分组
+        return contacts.stream()
+                .collect(Collectors.groupingBy(
+                        // 分组逻辑
+                        contact -> {
+                            String pinyin = contact.getPinyinName();
+                            if (pinyin == null || pinyin.isEmpty()) {
+                                return "#";
+                            }
+                            char firstChar = pinyin.toUpperCase().charAt(0);
+                            if (firstChar >= 'A' && firstChar <= 'Z') {
+                                return String.valueOf(firstChar);
+                            }
+                            return "#";
+                        },
+                        // 使用 LinkedHashMap 保证首字母顺序
+                        LinkedHashMap::new,
+                        // 下游收集器：将 Contact 映射为 ContactListItemDTO
+                        Collectors.mapping(
+                                contact -> {
+                                    ContactListItemDTO dto = new ContactListItemDTO();
+                                    BeanUtils.copyProperties(contact, dto);
+                                    return dto;
+                                },
+                                Collectors.toList()
+                        )
+                ));
     }
 }
 
