@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhimai.xingyun.mapper.ContactTagMapper">
+
+    <!-- 批量插入联系人-标签关联 -->
+    <insert id="batchInsertRelations">
+        INSERT INTO contact_tags (contact_id, tag_id)
+        VALUES
+        <foreach collection="tagIds" item="tagId" separator=",">
+            (#{contactId}, #{tagId})
+        </foreach>
+    </insert>
+
+</mapper>
