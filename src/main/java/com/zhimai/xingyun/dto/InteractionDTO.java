@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 @Data
 public class InteractionDTO {
     private Long id;
+    private Long contactId;
+    private String contactName;
     private String interactionType;
     private String summary;
     private LocalDateTime interactionTime;

@@ -1,0 +1,5 @@
+/* src/pages/ContactDetail/index.module.css */
+.spinner { display: block; margin: 50px auto; }
+.pageHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.tagSection { margin-bottom: 24px; }
+.timelineSection { margin-top: 24px; }

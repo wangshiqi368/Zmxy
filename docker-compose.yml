@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: zmxy-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/digital_network?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_USERNAME=prod_user
+      - SPRING_DATASOURCE_PASSWORD=prod_password
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - zmxy-network
+
+  db:
+    image: mysql:8.0
+    container_name: zmxy-db
+    environment:
+      - MYSQL_DATABASE=digital_network
+      - MYSQL_USER=prod_user
+      - MYSQL_PASSWORD=prod_password
+      - MYSQL_ROOT_PASSWORD=root_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - zmxy-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - zmxy-network
+
+networks:
+  zmxy-network:
+    driver: bridge
+
+volumes:
+  zmxy-db-data:

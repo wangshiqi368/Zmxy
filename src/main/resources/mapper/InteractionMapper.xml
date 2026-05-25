@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhimai.xingyun.mapper.InteractionMapper">
+
+    <select id="findUpcomingFollowUpsByUserId" resultType="com.zhimai.xingyun.dto.InteractionDTO">
+        SELECT
+            i.id,
+            i.contact_id AS contactId,
+            c.name AS contactName,
+            i.interaction_type AS interactionType,
+            i.summary,
+            i.interaction_time AS interactionTime,
+            i.next_follow_up_date AS nextFollowUpDate,
+            i.is_follow_up_completed AS isFollowUpCompleted
+        FROM
+            interactions i
+        JOIN
+            contacts c ON i.contact_id = c.id
+        WHERE
+            c.user_id = #{userId}
+            AND i.next_follow_up_date IS NOT NULL
+            AND i.is_follow_up_completed = 0
+        ORDER BY
+            i.next_follow_up_date ASC
+    </select>
+
+</mapper>

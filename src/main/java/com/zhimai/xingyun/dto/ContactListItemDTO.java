@@ -12,4 +12,9 @@ public class ContactListItemDTO {
     private String company;
     private String title;
     private String avatarUrl;
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 }

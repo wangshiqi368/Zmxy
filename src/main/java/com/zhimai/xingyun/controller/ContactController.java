@@ -1,18 +1,22 @@
 package com.zhimai.xingyun.controller;
 
 import com.zhimai.xingyun.dto.ContactCreateDTO;
+import com.zhimai.xingyun.dto.ContactDetailVO;
+import com.zhimai.xingyun.dto.ContactListItemDTO;
+import com.zhimai.xingyun.dto.ContactUpdateDTO;
 import com.zhimai.xingyun.service.IContactService;
+import com.zhimai.xingyun.util.UserContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import com.zhimai.xingyun.dto.ContactDetailVO;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.zhimai.xingyun.dto.ContactListItemDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -35,30 +39,37 @@ public class ContactController {
 
     @PostMapping
     public ResponseEntity<Void> createContact(@RequestBody ContactCreateDTO contactCreateDTO) {
-        // TODO: 在 Phase 4 (安全认证) 中，此 ID 应从 Security Context 获取
-        long currentUserId = 1L;
-
-        contactService.createContact(contactCreateDTO, currentUserId);
-        
-        // 返回 201 Created 状态码，表示资源创建成功
+        contactService.createContact(contactCreateDTO, UserContext.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateContact(@PathVariable("id") Long contactId, @RequestBody ContactUpdateDTO contactUpdateDTO) {
+        contactService.updateContact(contactId, contactUpdateDTO, UserContext.getUserId());
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ContactDetailVO> getContactDetail(@PathVariable("id") Long contactId) {
-        // TODO: 在 Phase 4 (安全认证) 中，此 ID 应从 Security Context 获取
-        long currentUserId = 1L;
-
-        ContactDetailVO contactDetail = contactService.getContactDetail(contactId, currentUserId);
+        ContactDetailVO contactDetail = contactService.getContactDetail(contactId, UserContext.getUserId());
         return ResponseEntity.ok(contactDetail);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteContact(@PathVariable("id") Long contactId) {
+        contactService.deleteContact(contactId, UserContext.getUserId());
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping
     public ResponseEntity<Map<String, List<ContactListItemDTO>>> getContactList() {
-        // TODO: 在 Phase 4 (安全认证) 中，此 ID 应从 Security Context 获取
-        long currentUserId = 1L;
-
-        Map<String, List<ContactListItemDTO>> groupedContacts = contactService.getContactListGrouped(currentUserId);
+        Map<String, List<ContactListItemDTO>> groupedContacts = contactService.getContactListGrouped(UserContext.getUserId());
         return ResponseEntity.ok(groupedContacts);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ContactListItemDTO>> searchContacts(@RequestParam("keyword") String keyword) {
+        List<ContactListItemDTO> searchResults = contactService.searchContacts(keyword, UserContext.getUserId());
+        return ResponseEntity.ok(searchResults);
     }
 }

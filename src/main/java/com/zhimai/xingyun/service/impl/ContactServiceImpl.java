@@ -6,6 +6,7 @@ import com.zhimai.xingyun.domain.entity.Interaction;
 import com.zhimai.xingyun.dto.ContactCreateDTO;
 import com.zhimai.xingyun.dto.ContactDetailVO;
 import com.zhimai.xingyun.dto.ContactListItemDTO;
+import com.zhimai.xingyun.dto.ContactUpdateDTO;
 import com.zhimai.xingyun.dto.InteractionDTO;
 import com.zhimai.xingyun.dto.TagDTO;
 import com.zhimai.xingyun.exception.ResourceNotFoundException;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +61,33 @@ public class ContactServiceImpl implements IContactService {
 
         if (!CollectionUtils.isEmpty(dto.getTagIds())) {
             contactTagMapper.batchInsertRelations(newContactId, dto.getTagIds());
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateContact(Long contactId, ContactUpdateDTO dto, Long userId) {
+        // 1. 校验权限与存在性
+        QueryWrapper<Contact> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", contactId).eq("user_id", userId);
+        Contact existingContact = contactMapper.selectOne(queryWrapper);
+        if (existingContact == null) {
+            throw new ResourceNotFoundException("联系人不存在或无权访问");
+        }
+
+        // 2. 更新基础信息
+        BeanUtils.copyProperties(dto, existingContact);
+        // 如果姓名发生变化，重新生成拼音
+        existingContact.setPinyinName(PinyinUtils.getPinyin(dto.getName()));
+        contactMapper.updateById(existingContact);
+
+        // 3. 更新标签关联 (先删后增)
+        QueryWrapper<com.zhimai.xingyun.domain.entity.ContactTag> tagRelationWrapper = new QueryWrapper<>();
+        tagRelationWrapper.eq("contact_id", contactId);
+        contactTagMapper.delete(tagRelationWrapper);
+
+        if (!CollectionUtils.isEmpty(dto.getTagIds())) {
+            contactTagMapper.batchInsertRelations(contactId, dto.getTagIds());
         }
     }
 
@@ -135,6 +164,42 @@ public class ContactServiceImpl implements IContactService {
                                 Collectors.toList()
                         )
                 ));
+    }
+
+    @Override
+    public List<ContactListItemDTO> searchContacts(String keyword, Long userId) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        QueryWrapper<Contact> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id", userId)
+                .and(w -> w.like("name", keyword)
+                        .or().like("company", keyword)
+                        .or().like("pinyin_name", keyword));
+
+        List<Contact> contacts = contactMapper.selectList(wrapper);
+
+        return contacts.stream().map(contact -> {
+            ContactListItemDTO dto = new ContactListItemDTO();
+            BeanUtils.copyProperties(contact, dto);
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteContact(Long contactId, Long userId) {
+        // 1. 校验权限与存在性
+        QueryWrapper<Contact> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", contactId).eq("user_id", userId);
+        Contact existingContact = contactMapper.selectOne(queryWrapper);
+        if (existingContact == null) {
+            throw new ResourceNotFoundException("联系人不存在或无权访问");
+        }
+
+        // 2. 执行删除 (数据库已配置级联删除，所以只需删除主表记录)
+        contactMapper.deleteById(contactId);
     }
 }
 

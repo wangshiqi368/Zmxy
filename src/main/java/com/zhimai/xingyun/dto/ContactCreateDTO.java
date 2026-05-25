@@ -25,4 +25,9 @@ public class ContactCreateDTO {
     
     // 关键点：接收前端选中的标签ID集合
     private List<Long> tagIds; 
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public List<Long> getTagIds() { return tagIds; }
+    public void setTagIds(List<Long> tagIds) { this.tagIds = tagIds; }
 }

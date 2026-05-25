@@ -23,45 +23,33 @@ public class User {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 登录用户名
-     */
     @TableField("username")
     private String username;
 
-    /**
-     * 加密后的密码哈希
-     */
     @TableField("password_hash")
     private String passwordHash;
 
-    /**
-     * 用户电子邮箱
-     */
     @TableField("email")
     private String email;
 
-    /**
-     * 用户头像地址
-     */
     @TableField("avatar_url")
     private String avatarUrl;
 
-    /**
-     * 账号状态 (0:禁用, 1:启用)
-     */
     @TableField("status")
     private Integer status;
 
-    /**
-     * 创建时间
-     */
     @TableField("created_at")
     private LocalDateTime createdAt;
 
-    /**
-     * 更新时间
-     */
     @TableField("updated_at")
     private LocalDateTime updatedAt;
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public Integer getStatus() { return status; }
+    public void setStatus(Integer status) { this.status = status; }
 }
