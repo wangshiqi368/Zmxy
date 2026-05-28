@@ -61,33 +61,35 @@ export default function ContactListPage() {
 
     if (loading && !isModalVisible) return <Spin size="large" className={styles.spinner} />;
 
+    const collapseItems = Object.entries(contacts).map(([group, list]) => ({
+        key: group,
+        label: `${group} (${list.length})`,
+        children: (
+            <List
+                dataSource={list}
+                renderItem={(item) => (
+                    <List.Item actions={[
+                        <Button type="link" icon={<EditOutlined />} onClick={() => handleOpenModal(item)}>编辑</Button>,
+                        <Popconfirm title="确定删除？" onConfirm={() => handleDelete(item.id)}><Button type="link" icon={<DeleteOutlined />} danger>删除</Button></Popconfirm>
+                    ]}>
+                        <List.Item.Meta
+                            avatar={item.avatarUrl ? <Avatar src={item.avatarUrl} /> : <Avatar icon={<UserOutlined />} />}
+                            title={<a href={`/contacts/${item.id}`}>{item.name}</a>}
+                            description={`${item.company || ''} - ${item.title || ''}`}
+                        />
+                    </List.Item>
+                )}
+            />
+        )
+    }));
+
     return (
         <div>
             <div className={styles.pageHeader}>
                 <Title level={2}>我的联系人</Title>
                 <Button type="primary" icon={<PlusOutlined />} onClick={() => handleOpenModal()}>新建联系人</Button>
             </div>
-            <Collapse ghost>
-                {Object.entries(contacts).map(([group, list]) => (
-                    <Panel header={`${group} (${list.length})`} key={group}>
-                        <List
-                            dataSource={list}
-                            renderItem={(item) => (
-                                <List.Item actions={[
-                                    <Button type="link" icon={<EditOutlined />} onClick={() => handleOpenModal(item)}>编辑</Button>,
-                                    <Popconfirm title="确定删除？" onConfirm={() => handleDelete(item.id)}><Button type="link" icon={<DeleteOutlined />} danger>删除</Button></Popconfirm>
-                                ]}>
-                                    <List.Item.Meta
-                                        avatar={item.avatarUrl ? <Avatar src={item.avatarUrl} /> : <Avatar icon={<UserOutlined />} />}
-                                        title={<a href={`/contacts/${item.id}`}>{item.name}</a>}
-                                        description={`${item.company || ''} - ${item.title || ''}`}
-                                    />
-                                </List.Item>
-                            )}
-                        />
-                    </Panel>
-                ))}
-            </Collapse>
+            <Collapse ghost items={collapseItems} />
             <ContactFormModal visible={isModalVisible} onCancel={() => setIsModalVisible(false)} onFinish={handleFinish} initialValues={editingContact} />
         </div>
     );

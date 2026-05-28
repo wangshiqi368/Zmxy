@@ -31,7 +31,6 @@ export default function InteractionFormModal({
     
     useEffect(() => {
         if(visible) {
-            form.resetFields();
             form.setFieldsValue({ interactionTime: dayjs() });
         }
     }, [visible, form]);
@@ -42,7 +41,7 @@ export default function InteractionFormModal({
             open={visible}
             onCancel={onCancel}
             onOk={handleOk}
-            destroyOnClose={true}
+            destroyOnHidden={true}
         >
             <Form form={form} layout="vertical" onFinish={onFinish} name="interactionForm">
                 <Form.Item

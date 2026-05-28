@@ -21,8 +21,6 @@ export default function ContactFormModal({
     useEffect(() => {
         if (visible) {
             form.setFieldsValue(initialValues || {});
-        } else {
-            form.resetFields();
         }
     }, [initialValues, visible, form]);
 
@@ -32,7 +30,7 @@ export default function ContactFormModal({
             open={visible}
             onCancel={onCancel}
             onOk={() => form.submit()}
-            destroyOnClose={true}
+            destroyOnHidden={true}
         >
             <Form form={form} layout="vertical" onFinish={onFinish} name="contactForm">
                 <Form.Item

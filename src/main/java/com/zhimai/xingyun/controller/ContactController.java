@@ -66,4 +66,16 @@ public class ContactController {
         ContactDetailVO contactDetail = contactService.getContactDetail(contactId, UserContext.getUserId());
         return ResponseEntity.ok(contactDetail);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteContact(@PathVariable("id") Long contactId) {
+        contactService.deleteContact(contactId, UserContext.getUserId());
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<Map<String, List<ContactListItemDTO>>> getContactList() {
+        Map<String, List<ContactListItemDTO>> groupedContacts = contactService.getContactListGrouped(UserContext.getUserId());
+        return ResponseEntity.ok(groupedContacts);
+    }
 }
