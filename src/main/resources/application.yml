@@ -20,7 +20,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/digital_network?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
-    password: 12345678 # 请您后续修改为本地 MySQL 的 root 密码
+    password: 12345678
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 # MyBatis-Plus Configuration

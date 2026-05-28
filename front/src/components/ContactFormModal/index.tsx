@@ -32,7 +32,7 @@ export default function ContactFormModal({
             open={visible}
             onCancel={onCancel}
             onOk={() => form.submit()}
-            destroyOnClose
+            destroyOnClose={true}
         >
             <Form form={form} layout="vertical" onFinish={onFinish} name="contactForm">
                 <Form.Item

@@ -42,7 +42,7 @@ export default function InteractionFormModal({
             open={visible}
             onCancel={onCancel}
             onOk={handleOk}
-            destroyOnClose
+            destroyOnClose={true}
         >
             <Form form={form} layout="vertical" onFinish={onFinish} name="interactionForm">
                 <Form.Item

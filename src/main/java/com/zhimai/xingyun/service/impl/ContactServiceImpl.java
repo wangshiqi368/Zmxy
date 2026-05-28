@@ -201,5 +201,15 @@ public class ContactServiceImpl implements IContactService {
         // 2. 执行删除 (数据库已配置级联删除，所以只需删除主表记录)
         contactMapper.deleteById(contactId);
     }
+
+    @Override
+    public List<ContactListItemDTO> getRecentContacts(Long userId) {
+        List<Contact> contacts = contactMapper.findRecentContacts(userId);
+        return contacts.stream().map(contact -> {
+            ContactListItemDTO dto = new ContactListItemDTO();
+            BeanUtils.copyProperties(contact, dto);
+            return dto;
+        }).collect(Collectors.toList());
+    }
 }
 

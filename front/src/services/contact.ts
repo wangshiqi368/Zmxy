@@ -25,3 +25,7 @@ export const updateContact = (id: number, data: ContactFormData) => {
 export const deleteContact = (id: number) => {
     return apiClient.delete(`/contacts/${id}`);
 }
+
+export const getRecentContacts = () => {
+    return apiClient.get('/contacts/recent');
+};

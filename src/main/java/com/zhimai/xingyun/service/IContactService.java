@@ -55,6 +55,11 @@ public interface IContactService {
     List<ContactListItemDTO> searchContacts(String keyword, Long userId);
 
     /**
+     * 获取最近互动的联系人 (最近30天)
+     */
+    List<ContactListItemDTO> getRecentContacts(Long userId);
+
+    /**
      * 删除联系人
      * @param contactId 联系人ID
      * @param userId 当前操作的用户ID

@@ -34,7 +34,8 @@ export default function ContactDetailPage() {
         const interactionData: InteractionFormData = {
             ...values,
             contactId: parseInt(id, 10),
-            interactionTime: values.interactionTime.format('YYYY-MM-DD HH:mm:ss'),
+            // 使用 ISO-8601 格式 (包含 T), 解决后端解析 LocalDateTime 的 400 错误
+            interactionTime: values.interactionTime.format('YYYY-MM-DDTHH:mm:ss'),
             nextFollowUpDate: values.nextFollowUpDate ? values.nextFollowUpDate.format('YYYY-MM-DD') : undefined,
         };
         try {
@@ -69,17 +70,40 @@ export default function ContactDetailPage() {
                 <Descriptions.Item label="微信号" span={2}>{baseInfo.wechatId}</Descriptions.Item>
                 <Descriptions.Item label="备注" span={2}>{baseInfo.remark}</Descriptions.Item>
             </Descriptions>
+
             <div className={styles.timelineSection}>
                 <Title level={4}>互动时间线</Title>
-                <Timeline>
-                    {timeline.map(item => (
-                        <Timeline.Item key={item.id}>
-                            <p><strong>{format(new Date(item.interactionTime), 'yyyy-MM-dd HH:mm')}</strong> - <Text type="secondary">({item.interactionType})</Text></p>
-                            <p>{item.summary}</p>
-                            {item.nextFollowUpDate && <Tag color={item.isFollowUpCompleted ? 'green' : 'red'}>{item.isFollowUpCompleted ? '已完成' : `待跟进: ${item.nextFollowUpDate}`}</Tag>}
-                        </Timeline.Item>
-                    ))}
-                </Timeline>
+                <div className={styles.timelineContainer}>
+                    <div className={styles.horizontalAxis}></div>
+                    <div className={styles.timelineWrapper}>
+                        {timeline.map((item) => (
+                            <div className={styles.timelineNode} key={item.id}>
+                                {/* 时间戳容器 - 始终在上 */}
+                                <div className={styles.timeContainer}>
+                                    <p className={styles.timeText}>
+                                        {format(new Date(item.interactionTime), 'yyyy-MM-dd HH:mm')}
+                                    </p>
+                                </div>
+                                
+                                {/* 中心点 */}
+                                <div className={styles.dot}></div>
+                                
+                                {/* 详情信息容器 - 始终在下 */}
+                                <div className={styles.infoContainer}>
+                                    <span className={styles.typeText}>({item.interactionType})</span>
+                                    <p className={styles.summaryText}>{item.summary}</p>
+                                    {item.nextFollowUpDate && (
+                                        <div className={styles.tagWrapper}>
+                                            <Tag color={item.isFollowUpCompleted ? 'green' : 'red'} style={{ borderRadius: '12px', fontSize: '11px' }}>
+                                                {item.isFollowUpCompleted ? '已完成' : `待跟进: ${item.nextFollowUpDate}`}
+                                            </Tag>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
             <InteractionFormModal visible={isInteractionModalVisible} onCancel={() => setIsInteractionModalVisible(false)} onFinish={handleAddInteraction} />
         </div>

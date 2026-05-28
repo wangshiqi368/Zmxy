@@ -2,6 +2,9 @@ package com.zhimai.xingyun.mapper;
 
 import com.zhimai.xingyun.domain.entity.Contact;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface ContactMapper extends BaseMapper<Contact> {
 
+    /**
+     * 获取最近30天内有互动记录的联系人
+     */
+    List<Contact> findRecentContacts(@Param("userId") Long userId);
 }

@@ -49,27 +49,21 @@ public class ContactController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ContactDetailVO> getContactDetail(@PathVariable("id") Long contactId) {
-        ContactDetailVO contactDetail = contactService.getContactDetail(contactId, UserContext.getUserId());
-        return ResponseEntity.ok(contactDetail);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteContact(@PathVariable("id") Long contactId) {
-        contactService.deleteContact(contactId, UserContext.getUserId());
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping
-    public ResponseEntity<Map<String, List<ContactListItemDTO>>> getContactList() {
-        Map<String, List<ContactListItemDTO>> groupedContacts = contactService.getContactListGrouped(UserContext.getUserId());
-        return ResponseEntity.ok(groupedContacts);
-    }
-
     @GetMapping("/search")
     public ResponseEntity<List<ContactListItemDTO>> searchContacts(@RequestParam("keyword") String keyword) {
         List<ContactListItemDTO> searchResults = contactService.searchContacts(keyword, UserContext.getUserId());
         return ResponseEntity.ok(searchResults);
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<List<ContactListItemDTO>> getRecentContacts() {
+        List<ContactListItemDTO> recentContacts = contactService.getRecentContacts(UserContext.getUserId());
+        return ResponseEntity.ok(recentContacts);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ContactDetailVO> getContactDetail(@PathVariable("id") Long contactId) {
+        ContactDetailVO contactDetail = contactService.getContactDetail(contactId, UserContext.getUserId());
+        return ResponseEntity.ok(contactDetail);
     }
 }
